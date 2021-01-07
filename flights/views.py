@@ -20,3 +20,21 @@ def create_flight(request):
     
     return render(request, 'flight-form.html', {'form': form})
 
+
+def update_flight(request,id):
+    flight = Flight.objects.get(id=id)
+    form = FlightForm(request.POST or None, instance=flight)
+
+    if form.is_valid():
+        form.save()
+        return redirect('list_flight')
+
+    return render(request, 'flight-form.html', {'form': form, 'flight':flight})
+
+
+def delete_flight(request,id):
+    flight = Flight.objects.get(id=id)
+    flight.delete()
+    return redirect('list_flight')
+
+
