@@ -7,6 +7,6 @@ urlpatterns = [
     path('update/<int:id>', views.update_flight, name="update_flight"),
     path('delete/<int:id>', views.delete_flight, name="delete_flight"),
 
-    path('pdf', views.print_pdf, name="pdf"),
+    path('pdf', views.render_pdf_view, name="pdf"),
 
 ]
