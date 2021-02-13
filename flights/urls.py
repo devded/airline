@@ -8,5 +8,6 @@ urlpatterns = [
     path('delete/<int:id>', views.delete_flight, name="delete_flight"),
 
     path('pdf', views.render_pdf_view, name="pdf"),
+    path('pdfview', views.view_pdf, name='pdf_view'),
 
 ]

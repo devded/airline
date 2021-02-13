@@ -113,3 +113,9 @@ def render_pdf_view(request):
     return response
 
 #Generate PDF END
+
+def view_pdf(request):
+    flights = Flight.objects.all()
+
+    return render(request, 'test.html', {'flights':flights})
+    #return render(request, 'flight.html', {'flights': flights})
