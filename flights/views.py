@@ -14,7 +14,7 @@ import os
 from django.shortcuts import render, HttpResponse, redirect
 from .models import Flight
 from .forms import FlightForm
-# Create your views here.
+
 
 
 def list_flight(request):
@@ -22,6 +22,7 @@ def list_flight(request):
     flights = Flight.objects.all()
     # return HttpResponse(flight)
     return render(request, 'flight.html', {'flights': flights})
+
 
 
 def create_flight(request):
@@ -32,6 +33,8 @@ def create_flight(request):
         # return HttpResponse('Saved')
 
     return render(request, 'flight-form.html', {'form': form})
+
+
 
 
 def update_flight(request, id):
@@ -45,28 +48,17 @@ def update_flight(request, id):
     return render(request, 'flight-form.html', {'form': form, 'flight': flight})
 
 
+
+
 def delete_flight(request, id):
     flight = Flight.objects.get(id=id)
     flight.delete()
     return redirect('list_flight')
 
 
-def generate_PDF(request):
-    data = {}
-
-    template = get_template('test.html')
-    html = template.render(Context(data))
-
-    file = open('test.pdf', "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=file,
-                                encoding='utf-8')
-
-    file.seek(0)
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
 
 
+#Generate PDF START
 def link_callback(uri, rel):
     """
     Convert HTML URIs to absolute system paths so xhtml2pdf can access those
@@ -100,11 +92,14 @@ def link_callback(uri, rel):
 
 
 def render_pdf_view(request):
+    flights = Flight.objects.all()
     template_path = 'test.html'
-    context = {'myvar': 'this is your template context'}
+    context = {'myvar': 'this is your template context', 'flights': flights}
+   
     # Create a Django response object, and specify content_type as pdf
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+    
     # find the template and render it.
     template = get_template(template_path)
     html = template.render(context)
@@ -117,29 +112,4 @@ def render_pdf_view(request):
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
 
-
-def html_to_pdf_directly(request):
-    template = get_template("test.html")
-    context = Context({'pagesize': 'A4'})
-    html = template.render(context)
-    result = StringIO.StringIO()
-    pdf = pisa.pisaDocument(StringIO.StringIO(html), dest=result)
-    if not pdf.err:
-        return HttpResponse(result.getvalue(), content_type='application/pdf')
-    else:
-        return HttpResponse('Errors')
-
-
-class HtmlPdf(FPDF, HTMLMixin):
-    pass
-
-
-def print_pdf(request):
-    pdf = HtmlPdf()
-    pdf.add_page()
-    pdf.write_html(render_to_string('test.html'))
-
-    response = HttpResponse(pdf.output(dest='S').encode('latin-1'))
-    response['Content-Type'] = 'application/pdf'
-
-    return response
+#Generate PDF END
